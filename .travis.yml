@@ -1,0 +1,28 @@
+language: go
+
+os:
+  - linux
+  - osx
+
+env:
+  - SCRIPT=test CLANG=3.9
+
+matrix:
+  include:
+    - env: SCRIPT=lint CLANG=3.9
+      os: linux
+
+before_install:
+  - |
+      if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+        wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+        sudo apt-add-repository "deb http://apt.llvm.org/precise/ llvm-toolchain-precise-$CLANG main"
+        sudo apt-get update
+        sudo apt-cache search clang
+        sudo apt-get install -f -y --force-yes clang-$CLANG lldb-$CLANG
+      fi
+  - |
+      if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+        rvm get head
+      fi
